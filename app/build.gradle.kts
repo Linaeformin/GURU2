@@ -7,6 +7,12 @@ android {
     namespace = "com.example.timecapsule"
     compileSdk = 34
 
+    buildFeatures{
+        viewBinding=true
+        //noinspection DataBindingWithoutKapt
+        dataBinding=true
+    }
+
     defaultConfig {
         applicationId = "com.example.timecapsule"
         minSdk = 24

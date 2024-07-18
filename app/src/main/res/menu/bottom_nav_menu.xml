@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <item
+        android:id="@+id/writeFragment"
+        android:icon="@color/black"
+        android:enabled="true"
+        android:title="@string/writeFragment"/>
+
+    <item
+        android:id="@+id/homeFragment"
+        android:icon="@color/black"
+        android:enabled="true"
+        android:title="@string/homeFragent"
+        tools:ignore="AlwaysShowAction"/>
+
+    <item
+        android:id="@+id/readFragment"
+        android:icon="@color/black"
+        android:enabled="true"
+        android:title="@string/readFragment"/>
+
+</menu>
