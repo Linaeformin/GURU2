@@ -15,6 +15,7 @@ class ReadFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        //바인딩 설정
         binding= FragmentReadBinding.inflate(inflater, container, false)
 
         return binding.root

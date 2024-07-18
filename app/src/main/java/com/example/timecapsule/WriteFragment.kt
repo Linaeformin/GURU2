@@ -15,6 +15,7 @@ class WriteFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        //바인딩 설정
         binding= FragmentWriteBinding.inflate(inflater, container, false)
 
         return binding.root

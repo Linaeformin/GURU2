@@ -15,6 +15,7 @@ class HomeFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        //바인딩 설정
         binding=FragmentHomeBinding.inflate(inflater, container, false)
 
         return binding.root

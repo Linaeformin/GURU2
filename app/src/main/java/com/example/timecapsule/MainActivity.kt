@@ -9,16 +9,21 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        //화면 설정
         binding=ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        //homeFragment를 기본으로 설정
         binding.mainBnv.selectedItemId = R.id.homeFragment
+
+        //네비게이션 실행
         initBottomNavigation()
     }
 
     private fun initBottomNavigation(){
         supportFragmentManager.beginTransaction().replace(R.id.main_frameLayout, HomeFragment()).commitAllowingStateLoss()
 
+        //선택된 아이템에 따라 fragment 전환
         binding.mainBnv.setOnItemSelectedListener { item->
             when (item.itemId){
                 R.id.homeFragment->{
