@@ -17,6 +17,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="15dp">
+
         <TextView
             android:id="@+id/dialog_home_place_tv"
             android:layout_width="wrap_content"
@@ -25,6 +26,7 @@
             android:textColor="@color/orange"
             android:textStyle="bold"
             tools:ignore="TextContrastCheck"/>
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -62,12 +64,14 @@
             android:text="@string/homeDate"
             android:textColor="@color/gray"
             tools:ignore="TextContrastCheck"/>
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/homeDateText"
             android:textColor="@color/gray"
             tools:ignore="TextContrastCheck"/>
+
     </LinearLayout>
 
     <android.widget.Button
@@ -120,6 +124,7 @@
             android:backgroundTint="@color/black"
             android:contentDescription="@string/cancelBtn"
             android:src="@drawable/cancel_btn" />
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
