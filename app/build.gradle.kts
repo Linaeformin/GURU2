@@ -7,6 +7,7 @@ android {
     namespace = "com.example.timecapsule"
     compileSdk = 34
 
+    //바인딩 설정
     buildFeatures{
         viewBinding=true
         //noinspection DataBindingWithoutKapt
