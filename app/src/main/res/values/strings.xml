@@ -3,4 +3,12 @@
     <string name="homeFragent">홈</string>
     <string name="writeFragment">글쓰기</string>
     <string name="readFragment">열람하기</string>
+    <string name="homePlace">서울여대</string>
+    <string name="homePlaceText">에서의 타임캡슐</string>
+    <string name="homeTitle">잊을 수 없는 하루</string>
+    <string name="homeDate">2024.06.21</string>
+    <string name="homeDateText">에 작성된 글입니다.</string>
+    <string name="homeOpenBtn">캡슐 열어보기</string>
+    <string name="homeOpenDday">캡슐 오픈까지 D-7</string>
+    <string name="cancelBtn">취소 버튼</string>
 </resources>

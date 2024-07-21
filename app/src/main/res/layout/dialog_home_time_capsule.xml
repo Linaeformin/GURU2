@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="350dp"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_gravity="center"
+    android:layout_marginStart="30dp"
+    android:layout_marginEnd="30dp"
+    android:background="@drawable/dialog_round">
+
+    <LinearLayout
+        android:id="@+id/dialog_home_place_ll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="15dp">
+        <TextView
+            android:id="@+id/dialog_home_place_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/homePlace"
+            android:textColor="@color/orange"
+            android:textStyle="bold"
+            tools:ignore="TextContrastCheck"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/homePlaceText"
+            android:textColor="@color/orange"
+            android:textStyle="bold"
+            tools:ignore="TextContrastCheck"/>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/dialog_home_title_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/dialog_home_place_ll"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:text="@string/homeTitle"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:layout_marginTop="20dp"/>
+
+    <LinearLayout
+        android:id="@+id/dialog_home_time_ll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/dialog_home_title_tv"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="7dp">
+
+        <TextView
+            android:id="@+id/dialog_home_date_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/homeDate"
+            android:textColor="@color/gray"
+            tools:ignore="TextContrastCheck"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/homeDateText"
+            android:textColor="@color/gray"
+            tools:ignore="TextContrastCheck"/>
+    </LinearLayout>
+
+    <android.widget.Button
+        android:id="@+id/dialog_home_open_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:text="@string/homeOpenBtn"
+        android:textColor="@color/black"
+        android:textSize="13sp"
+        android:background="@drawable/button_round"
+        android:backgroundTint="@color/yellow"
+        android:stateListAnimator="@null"
+        app:layout_constraintTop_toBottomOf="@id/dialog_home_time_ll"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:paddingHorizontal="20dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="15dp"
+        android:visibility="invisible"/>
+
+    <android.widget.Button
+        android:id="@+id/dialog_home_locked_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:text="@string/homeOpenDday"
+        android:textColor="@color/black"
+        android:textSize="13sp"
+        android:background="@drawable/button_round"
+        android:backgroundTint="@color/yellow"
+        android:stateListAnimator="@null"
+        app:layout_constraintTop_toBottomOf="@id/dialog_home_time_ll"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:paddingHorizontal="20dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="15dp"
+        android:visibility="invisible"/>
+
+    <LinearLayout
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/dialog_home_place_ll">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/black"
+            android:contentDescription="@string/cancelBtn"
+            android:src="@drawable/cancel_btn" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
