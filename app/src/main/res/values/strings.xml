@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">TimeCapsule</string>
-    <string name="homeFragent">홈</string>
+    <string name="homeFragment">홈</string>
     <string name="writeFragment">글쓰기</string>
     <string name="readFragment">열람하기</string>
     <string name="homePlace">서울여대</string>
@@ -11,4 +11,15 @@
     <string name="homeOpenBtn">캡슐 열어보기</string>
     <string name="homeOpenDday">캡슐 오픈까지 D-7</string>
     <string name="cancelBtn">취소 버튼</string>
+    <string name="postBtn">등록</string>
+    <string name="writeTitle">제목을 입력하세요.</string>
+    <string name="writeContent">내용을 입력하세요.</string>
+    <string name="writeUpload">이미지 업로드</string>
+    <string name="writeUploadBtn">이미지 업로드 버튼</string>
+    <string name="writeCategory">카테고리</string>
+    <string name="writeNoSetting">설정 안 함</string>
+    <string name="writeSetting">설정</string>
+    <string name="writeOpenDay">열람 가능일</string>
+    <string name="writeDate">2024.07.27</string>
+    <string name="writeNoDate">즉시 열람 가능</string>
 </resources>
