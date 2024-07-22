@@ -21,11 +21,20 @@ class WriteFragment : Fragment() {
         binding.writeCalendarBtn.setOnClickListener {
             popupCalendar()
         }
+
+        binding.writeCategoryBtn.setOnClickListener {
+            popupCategory()
+        }
         return binding.root
     }
 
     private fun popupCalendar(){
         val dialog=CalendarDialog()
+        dialog.show(parentFragmentManager,"")
+    }
+
+    private fun popupCategory(){
+        val dialog=CategoryDialog()
         dialog.show(parentFragmentManager,"")
     }
 }
