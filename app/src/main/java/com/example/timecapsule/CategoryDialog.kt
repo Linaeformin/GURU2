@@ -18,6 +18,7 @@ class CategoryDialog: DialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        //바인딩 설정
         binding = DialogWriteCategoryBinding.inflate(inflater, container, false)
 
         //팝업창 모서리 둥글게 만들기
