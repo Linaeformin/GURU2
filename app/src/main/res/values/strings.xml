@@ -9,7 +9,7 @@
     <string name="homeDate">2024.06.21</string>
     <string name="homeDateText">에 작성된 글입니다.</string>
     <string name="homeOpenBtn">캡슐 열어보기</string>
-    <string name="homeOpenDday">캡슐 오픈까지 D-7</string>
+    <string name="homeOpenDay">캡슐 오픈까지 D-7</string>
     <string name="cancelBtn">취소 버튼</string>
     <string name="postBtn">등록</string>
     <string name="writeTitle">제목을 입력하세요.</string>
@@ -22,4 +22,9 @@
     <string name="writeOpenDay">열람 가능일</string>
     <string name="writeDate">2024.07.27</string>
     <string name="writeNoDate">즉시 열람 가능</string>
+    <string name="categorySchool">학교</string>
+    <string name="categoryFamily">가족</string>
+    <string name="categoryTravel">여행</string>
+    <string name="categoryFriend">친구</string>
+    <string name="categoryFood">음식</string>
 </resources>
