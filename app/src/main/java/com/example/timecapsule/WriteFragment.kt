@@ -18,6 +18,14 @@ class WriteFragment : Fragment() {
         //바인딩 설정
         binding= FragmentWriteBinding.inflate(inflater, container, false)
 
+        binding.writeCalendarBtn.setOnClickListener {
+            popupCalendar()
+        }
         return binding.root
+    }
+
+    private fun popupCalendar(){
+        val dialog=CalendarDialog()
+        dialog.show(parentFragmentManager,"")
     }
 }
