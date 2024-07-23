@@ -30,7 +30,7 @@ class CategoryDialog : DialogFragment() {
         updateUI(previousOption)
 
         // radioGroup에 체인지 리스너 설정
-        binding.writeCategoryRg.setOnCheckedChangeListener { group, checkedId ->
+        binding.writeCategoryRg.setOnCheckedChangeListener { _, checkedId ->
             previousOption = checkedId
             when (checkedId) {
                 R.id.write_category_school_rb -> {
