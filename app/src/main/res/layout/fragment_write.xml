@@ -83,6 +83,7 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginStart="10dp"
                 android:scaleType="centerCrop"
                 android:contentDescription="@string/importImage" />
 
