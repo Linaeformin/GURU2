@@ -2,6 +2,7 @@ package com.example.timecapsule
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.WindowManager
 import com.example.timecapsule.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -15,6 +16,9 @@ class MainActivity : AppCompatActivity() {
 
         //네비게이션 실행
         initBottomNavigation()
+
+        // 소프트 키보드 동작 방식을 SOFT_INPUT_ADJUST_PAN으로 설정
+        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
     }
 
     private fun initBottomNavigation(){
