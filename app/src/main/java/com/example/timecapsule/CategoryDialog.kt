@@ -34,19 +34,19 @@ class CategoryDialog : DialogFragment() {
             categoryOption = checkedId
             when (checkedId) {
                 R.id.write_category_school_rb -> {
-                    sendSortOption("학교")    // 선택한 옵션을 부모 Fragment로 전달하는 함수
+                    sendCategoryOption("학교")    // 선택한 옵션을 부모 Fragment로 전달하는 함수
                 }
                 R.id.write_category_family_rb -> {
-                    sendSortOption("가족")    // 선택한 옵션을 부모 Fragment로 전달하는 함수
+                    sendCategoryOption("가족")    // 선택한 옵션을 부모 Fragment로 전달하는 함수
                 }
                 R.id.write_category_travel_rb -> {
-                    sendSortOption("여행")    // 선택한 옵션을 부모 Fragment로 전달하는 함수
+                    sendCategoryOption("여행")    // 선택한 옵션을 부모 Fragment로 전달하는 함수
                 }
                 R.id.write_category_friend_rb -> {
-                    sendSortOption("친구")    // 선택한 옵션을 부모 Fragment로 전달하는 함수
+                    sendCategoryOption("친구")    // 선택한 옵션을 부모 Fragment로 전달하는 함수
                 }
                 R.id.write_category_food_rb -> {
-                    sendSortOption("음식")    // 선택한 옵션을 부모 Fragment로 전달하는 함수
+                    sendCategoryOption("음식")    // 선택한 옵션을 부모 Fragment로 전달하는 함수
                 }
             }
         }
@@ -60,7 +60,7 @@ class CategoryDialog : DialogFragment() {
     }
 
     //WriteFragment에 선택된 카테고리 전송
-    private fun sendSortOption(option: String) {
+    private fun sendCategoryOption(option: String) {
         val result = Bundle()
         result.putString("selectedCategory", option)
         parentFragmentManager.setFragmentResult("categorySelection", result)
