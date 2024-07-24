@@ -26,6 +26,10 @@ class CategoryDialog : DialogFragment() {
         // 팝업창 모서리 둥글게 만들기
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
+        if(arguments?.getInt("categoryOption")!=null){
+            categoryOption= arguments?.getInt("categoryOption")!!
+        }
+
         //이전에 선택한 카테고리 UI 업데이트
         updateUI(categoryOption)
 
@@ -67,8 +71,8 @@ class CategoryDialog : DialogFragment() {
     }
 
     //선택된 카테고리에 따라 UI를 업데이트함
-    private fun updateUI(selectedOption: Int){
-        if(selectedOption!=0){
+    private fun updateUI(selectedOption: Int) {
+        if (selectedOption != 0) {
             binding.writeCategoryRg.check(selectedOption)   //이전 카테고리 check
         }
     }

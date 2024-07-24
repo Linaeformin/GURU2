@@ -46,4 +46,9 @@ class MainActivity : AppCompatActivity() {
             false
         }
     }
+
+    //외부에서 네비게이션 아이템을 설정할 수 있는 함수
+    fun setSelectedNavItem(itemId: Int) {
+        binding.mainBnv.selectedItemId = itemId
+    }
 }

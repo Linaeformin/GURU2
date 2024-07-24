@@ -6,10 +6,10 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
@@ -83,6 +83,32 @@ class WriteFragment : Fragment() {
             binding.writeCategoryTv.text = result
         }
 
+        //등록 버튼을 눌렀을 때
+        binding.writePostBtn.setOnClickListener {
+            //제목과 내용을 입력하지 않은 채로 등록을 시도하는 경우, 토스트 메시지 출력
+            if(binding.writeTitleEt.text.toString().isEmpty()||binding.writeContentEt.text.toString().isEmpty()){
+                if(binding.writeTitleEt.text.toString().isEmpty()){
+                    Toast.makeText(requireContext(), "제목을 입력하세요.", Toast.LENGTH_SHORT).show()
+                }
+                if(binding.writeContentEt.text.toString().isEmpty()){
+                    Toast.makeText(requireContext(), "내용을 입력하세요.", Toast.LENGTH_SHORT).show()
+                }
+            }
+            //제목과 내용을 입력하고 등록을 시도한 경우, 토스트 메시지 출력 및 홈으로 화면 전환
+            else {
+                Toast.makeText(requireContext(),"등록되었습니다.", Toast.LENGTH_SHORT).show()
+
+                //홈으로 화면 전환
+                val homeFragment = HomeFragment() // homeFragment 인스턴스 생성
+                val transaction = parentFragmentManager.beginTransaction()
+                transaction.replace(R.id.main_frameLayout, homeFragment)
+                transaction.addToBackStack(null)
+                transaction.commit()
+
+                // 바텀 네비게이션에서 홈을 선택한 상태로 설정
+                (requireActivity() as MainActivity).setSelectedNavItem(R.id.homeFragment)
+            }
+        }
         return binding.root
     }
 
@@ -115,10 +141,11 @@ class WriteFragment : Fragment() {
 
     // 캘린더 팝업창 출력
     private fun popupCalendar() {
-        Log.d("popup","$year-$month-$day")
+
+        //캘린더에 데이터 전달
         val dialog=CalendarDialog().apply {
             arguments=Bundle().apply {
-                putString("calendarDate","$year-$month-$day")   //캘린더에 데이터 전달
+                putString("calendarDate","$year-$month-$day")
             }
         }
         dialog.show(parentFragmentManager, "")  //CalendarDialog 실행
@@ -126,7 +153,11 @@ class WriteFragment : Fragment() {
 
     // 카테고리 팝업창 출력
     private fun popupCategory() {
-        val dialog=CategoryDialog()
+        val dialog=CategoryDialog().apply {
+            arguments=Bundle().apply {
+                Bundle().putInt("categoryOption",0)
+            }
+        }
         dialog.show(parentFragmentManager, "")  //CategoryDialog 실행
     }
 
@@ -189,7 +220,7 @@ class WriteFragment : Fragment() {
 
     // dp를 px로 변환하는 메서드
     private fun dpToPx(): Int {
-        val density = resources.displayMetrics.density  //디스플레이의 밀도 저장
-        return (200 * density).toInt()  //200dp로 설정
+        val density = resources.displayMetrics.density.toInt()  //디스플레이의 밀도 저장
+        return (200 * density)  //200dp로 설정
     }
 }
