@@ -87,11 +87,10 @@
                 android:contentDescription="@string/importImage" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
     </ScrollView>
 
-
-
-<LinearLayout
+    <LinearLayout
         android:id="@+id/write_image_upload_ll"
         android:layout_width="match_parent"
         android:layout_height="50dp"
