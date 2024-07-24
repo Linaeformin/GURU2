@@ -55,13 +55,13 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="260dp"
             android:background="@drawable/write_edit_background">
 
             <EditText
                 android:id="@+id/write_content_et"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="150dp"
                 android:hint="@string/writeContent"
                 android:textSize="16sp"
                 android:textStyle="bold"
@@ -84,6 +84,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
                 android:scaleType="centerCrop"
                 android:contentDescription="@string/importImage" />
 
