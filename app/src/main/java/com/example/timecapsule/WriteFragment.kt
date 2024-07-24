@@ -6,6 +6,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,11 +19,13 @@ import java.time.LocalDate
 private var settingOption: Int=0    //설정 옵션 정의
 
 class WriteFragment : Fragment() {
+    //바인딩 설정
     private lateinit var binding: FragmentWriteBinding
 
-    private var year: String="2024"
-    private var month: String="7"
-    private var day: String="25"
+    //열람 가능일을 받을 변수
+    private var year: String=""
+    private var month: String=""
+    private var day: String=""
 
     private val galleryCode = 100
     private val selectedImages=mutableListOf<Uri>()
@@ -37,7 +40,9 @@ class WriteFragment : Fragment() {
         // 바인딩 설정
         binding = FragmentWriteBinding.inflate(inflater, container, false)
 
+        //열람 가능일 설정으로 기본 세팅
         binding.writeSettingRg.check(R.id.write_setting_rb)
+
         //현재 날짜를 받아 textView에 반영
         getCurrentDate()
 
@@ -81,16 +86,48 @@ class WriteFragment : Fragment() {
         return binding.root
     }
 
+    @SuppressLint("SetTextI18n")
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // FragmentResultListener 설정
+        parentFragmentManager.setFragmentResultListener("selectedCalendar", this) { _, bundle ->
+            val result = bundle.getIntArray("selectedCalendar")
+
+            //각 요소에 해당하는 값에 대입
+            if (result != null) {
+                result.let{
+                    year= it[0].toString()
+                    month=it[1].toString()
+                    day=it[2].toString()
+                }
+
+                //textView에 반영
+                binding.writeDateTv.text= "$year.$month.$day"
+
+            } else {
+                //설정한 날짜가 없다면 현재 날짜 유지
+                getCurrentDate()
+            }
+        }
+    }
+
     // 캘린더 팝업창 출력
     private fun popupCalendar() {
-        val dialog = CalendarDialog()
-        dialog.show(parentFragmentManager, "")
+        Log.d("popup","$year-$month-$day")
+        val dialog=CalendarDialog().apply {
+            arguments=Bundle().apply {
+                putString("calendarDate","$year-$month-$day")   //캘린더에 데이터 전달
+            }
+        }
+        dialog.show(parentFragmentManager, "")  //CalendarDialog 실행
     }
 
     // 카테고리 팝업창 출력
     private fun popupCategory() {
-        val dialog = CategoryDialog()
-        dialog.show(parentFragmentManager, "")
+        val dialog=CategoryDialog()
+        dialog.show(parentFragmentManager, "")  //CategoryDialog 실행
     }
 
     //현재 날짜를 받아 textView에 반영
@@ -98,16 +135,18 @@ class WriteFragment : Fragment() {
     @RequiresApi(Build.VERSION_CODES.O)
     private fun getCurrentDate() {
         //오늘의 년도, 월, 일을 변수에 저장
-        val currentDate= LocalDate.now()
+        val currentDate=LocalDate.now()
 
         //오늘의 년도, 월, 일을 저장
         year=currentDate.year.toString()
         month=currentDate.monthValue.toString()
         day=currentDate.dayOfMonth.toString()
 
+        //열람 가능일로 textView 저장
         binding.writeDateTv.text= "$year.$month.$day"
     }
 
+    //갤러리 오픈
     @Suppress("DEPRECATION")
     private fun openGallery() {
         val intent = Intent(Intent.ACTION_PICK).apply { //데이터 요청
@@ -130,7 +169,7 @@ class WriteFragment : Fragment() {
         }
     }
 
-
+    //이미지 화면에 보이게 하는 코드
     private fun addImageToLayout(uri: Uri) {
         // 최대 이미지 개수 1개로 제한
         if (selectedImages.size >= 1) return
