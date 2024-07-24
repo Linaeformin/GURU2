@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import com.example.timecapsule.databinding.DialogWriteCategoryBinding
 
-private var previousOption: Int = 0     //이전 옵션 정의
+private var categoryOption: Int = 0     //이전 옵션 정의
 
 class CategoryDialog : DialogFragment() {
 
@@ -27,11 +27,11 @@ class CategoryDialog : DialogFragment() {
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
         //이전에 선택한 카테고리 UI 업데이트
-        updateUI(previousOption)
+        updateUI(categoryOption)
 
         // radioGroup에 체인지 리스너 설정
         binding.writeCategoryRg.setOnCheckedChangeListener { _, checkedId ->
-            previousOption = checkedId
+            categoryOption = checkedId
             when (checkedId) {
                 R.id.write_category_school_rb -> {
                     sendSortOption("학교")    // 선택한 옵션을 부모 Fragment로 전달하는 함수
