@@ -44,10 +44,10 @@ class SignUpActivity : AppCompatActivity() {
     //회원가입 API 연동
     private fun callSignUpApi(username: String, password: String) {
         //회원가입 요청 데이터 생성
-        val signUpRequest = ApiService.SignUpRequest(username, password)
+        val userRequest = ApiService.UserRequest(username, password)
 
         //Retrofit으로 회원가입 API 호출
-        RetrofitClient.instance.signUp(signUpRequest).enqueue(object : Callback<ResponseBody> {
+        RetrofitClient.instance.signUp(userRequest).enqueue(object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
 
                 //서버 응답에 성공한 경우
@@ -61,7 +61,7 @@ class SignUpActivity : AppCompatActivity() {
                     val intent = Intent(this@SignUpActivity, LoginActivity::class.java)
                     startActivity(intent)
 
-                    // 현재 액티비티 종료
+                    // 현재 Activity 종료
                     finish()
 
                 } else {
@@ -73,6 +73,7 @@ class SignUpActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                //네트워크 요청 실패 처리
                 Toast.makeText(this@SignUpActivity, "회원가입 요청 실패: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
