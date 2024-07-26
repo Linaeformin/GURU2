@@ -3,6 +3,7 @@ package com.example.timecapsule
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -12,23 +13,35 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import com.example.timecapsule.databinding.FragmentWriteBinding
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import java.time.LocalDate
+import android.Manifest
+import android.util.Log
 
 private var settingOption: Int=0    //설정 옵션 정의
 
 class WriteFragment : Fragment() {
     //바인딩 설정
     private lateinit var binding: FragmentWriteBinding
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private var categoryDialog: CategoryDialog? = null
 
     //열람 가능일을 받을 변수
     private var year: String=""
     private var month: String=""
     private var day: String=""
 
+    private val locationCode = 1
+
     private val galleryCode = 100
     private val selectedImages=mutableListOf<Uri>()
+
+    private var latitude:Double=0.0
+    private var longitude:Double=0.0
 
     @SuppressLint("SetTextI18n")
     @RequiresApi(Build.VERSION_CODES.O)
@@ -39,6 +52,31 @@ class WriteFragment : Fragment() {
     ): View {
         // 바인딩 설정
         binding = FragmentWriteBinding.inflate(inflater, container, false)
+
+        // FusedLocationProviderClient 초기화
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+
+        // 위치 권한 확인 및 요청
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ),
+                locationCode
+            )
+        } else {
+            // 권한이 이미 허용된 경우
+            getLastLocation()
+        }
 
         //열람 가능일 설정으로 기본 세팅
         binding.writeSettingRg.check(R.id.write_setting_rb)
@@ -67,6 +105,7 @@ class WriteFragment : Fragment() {
         binding.writeUploadBtn.setOnClickListener {
             openGallery()
         }
+
         // 캘린더 버튼 클릭시 팝업창 출력
         binding.writeCalendarBtn.setOnClickListener {
             popupCalendar()
@@ -112,6 +151,7 @@ class WriteFragment : Fragment() {
         return binding.root
     }
 
+
     @SuppressLint("SetTextI18n")
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -153,12 +193,15 @@ class WriteFragment : Fragment() {
 
     // 카테고리 팝업창 출력
     private fun popupCategory() {
-        val dialog=CategoryDialog().apply {
-            arguments=Bundle().apply {
-                Bundle().putInt("categoryOption",0)
-            }
+        categoryDialog = CategoryDialog()
+
+        // "설정 안 함"일 때 categoryOption을 0으로 설정
+        if (binding.writeCategoryTv.text.toString() == "설정 안 함") {
+            val args = Bundle()
+            args.putInt("categoryOption", 0)
+            categoryDialog!!.arguments = args
         }
-        dialog.show(parentFragmentManager, "")  //CategoryDialog 실행
+        categoryDialog!!.show(parentFragmentManager, "CategoryDialog")
     }
 
     //현재 날짜를 받아 textView에 반영
@@ -222,5 +265,47 @@ class WriteFragment : Fragment() {
     private fun dpToPx(): Int {
         val density = resources.displayMetrics.density.toInt()  //디스플레이의 밀도 저장
         return (200 * density)  //200dp로 설정
+    }
+
+    private fun getLastLocation() {
+        val locationCode = 1
+        // 위치 권한 확인 및 요청
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            Log.d("위치1","SUCCESS")
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ),
+                locationCode
+            )
+        } else {
+            Log.d("위치2","SUCCESS")
+            fusedLocationClient.lastLocation.addOnCompleteListener { task ->
+                if (task.isSuccessful && task.result != null) {
+                    val location = task.result
+                    latitude = location?.latitude!!
+                    longitude = location.longitude
+                    Log.d("위치3","Latitude: $latitude, Longitude: $longitude")
+                    // 위치 정보를 처리합니다.
+                    Toast.makeText(
+                        requireContext(),
+                        "Latitude: $latitude, Longitude: $longitude",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else {
+                    Toast.makeText(requireContext(), "Location not found", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
+        }
     }
 }

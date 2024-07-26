@@ -26,12 +26,8 @@ class CategoryDialog : DialogFragment() {
         // 팝업창 모서리 둥글게 만들기
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
-        if(arguments?.getInt("categoryOption")!=null){
-            categoryOption= arguments?.getInt("categoryOption")!!
-        }
-
-        //이전에 선택한 카테고리 UI 업데이트
-        updateUI(categoryOption)
+        //이전 값으로 업데이트
+        uiUpdate()
 
         // radioGroup에 체인지 리스너 설정
         binding.writeCategoryRg.setOnCheckedChangeListener { _, checkedId ->
@@ -70,10 +66,14 @@ class CategoryDialog : DialogFragment() {
         parentFragmentManager.setFragmentResult("categorySelection", result)
     }
 
-    //선택된 카테고리에 따라 UI를 업데이트함
-    private fun updateUI(selectedOption: Int) {
-        if (selectedOption != 0) {
-            binding.writeCategoryRg.check(selectedOption)   //이전 카테고리 check
+    //이전에 선택한 카테고리 UI 업데이트
+    private fun uiUpdate(){
+        // Arguments에서 categoryOption 값을 가져오기
+        val args = arguments
+        if (args != null) {
+            categoryOption = args.getInt("categoryOption", 0)  // 기본값을 0으로 설정
         }
+        //radioGroup 미리 세팅
+        binding.writeCategoryRg.check(categoryOption)  // 선택된 옵션 체크
     }
 }
