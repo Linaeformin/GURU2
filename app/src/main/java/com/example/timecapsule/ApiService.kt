@@ -8,14 +8,19 @@ interface ApiService {
 
     //회원가입 POST 요청 정의
     @POST("api/signup")
-    fun signUp(@Body signUpRequest: SignUpRequest): Call<ResponseBody>
+    fun signUp(@Body userRequest: UserRequest): Call<ResponseBody>
 
     //회원가입 데이터
-    data class SignUpRequest(
+    data class UserRequest(
         @SerializedName("username") val username: String,
         @SerializedName("password") val password: String
     )
+
+    //로그인 POST 요청 정의
+    @POST("api/login")
+    fun login(@Body userRequest: UserRequest): Call<ResponseBody>
 }
+
 
 
 
