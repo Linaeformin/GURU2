@@ -8,4 +8,6 @@
     <color name="light_gray">#FAFAFA</color>
     <color name="dark_gray">#474747</color>
     <color name="transparent">#00ff0000</color>
+    <color name="green">#78B16A</color>
+    <color name="light_green">#ADD3A4</color>
 </resources>

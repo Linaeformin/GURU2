@@ -28,4 +28,10 @@
     <string name="categoryFriend">친구</string>
     <string name="categoryFood">음식</string>
     <string name="importImage">이미지 삽입</string>
+    <string name="signUp">회원가입</string>
+    <string name="signIdEmail">아이디 또는 이메일 주소</string>
+    <string name="signPassword">비밀번호</string>
+    <string name="signPasswordCheck">비밀번호 확인</string>
+    <string name="signComplete">완료</string>
+    <string name="login">로그인</string>
 </resources>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/yellow">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="@string/login"
+        android:src="@drawable/login_time_capsule"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <EditText
+        android:id="@+id/login_idEmail_et"
+        android:layout_width="260dp"
+        android:layout_height="60dp"
+        android:background="@drawable/signup_edittext_background"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginHorizontal="35dp"
+        android:layout_marginTop="300dp"
+        android:paddingHorizontal="15dp"
+        android:inputType="text|textEmailAddress"
+        android:hint="@string/signIdEmail"
+        android:autofillHints="no"/>
+
+    <EditText
+        android:id="@+id/login_password_et"
+        android:layout_width="260dp"
+        android:layout_height="60dp"
+        android:background="@drawable/signup_edittext_background"
+        app:layout_constraintTop_toBottomOf="@id/login_idEmail_et"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginHorizontal="35dp"
+        android:layout_marginTop="20dp"
+        android:paddingHorizontal="15dp"
+        android:hint="@string/signPassword"
+        android:inputType="text|textPassword"
+        android:autofillHints="no"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/login_login_btn"
+        android:layout_width="230dp"
+        android:layout_height="50dp"
+        android:text="@string/login"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:background="@drawable/signup_login_btn_background_1"
+        app:layout_constraintTop_toBottomOf="@id/login_password_et"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="40dp"
+        android:layout_marginHorizontal="30dp"
+        tools:ignore="DuplicateSpeakableTextCheck"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/login_signUp_btn"
+        android:layout_width="230dp"
+        android:layout_height="50dp"
+        android:text="@string/signUp"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:background="@drawable/signup_login_btn_background_2"
+        app:layout_constraintTop_toBottomOf="@id/login_login_btn"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="10dp"
+        android:layout_marginHorizontal="30dp"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
