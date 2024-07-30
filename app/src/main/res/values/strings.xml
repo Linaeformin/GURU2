@@ -34,4 +34,11 @@
     <string name="signPasswordCheck">비밀번호 확인</string>
     <string name="signComplete">완료</string>
     <string name="login">로그인</string>
+    <string name="readTitle">잊을 수 없는 하루</string>
+    <string name="readTimeCapsuleImage">타임캡슐 랜덤 이미지</string>
+    <string name="readViewable">열람 가능</string>
+    <string name="readUnViewable">열람 불가능</string>
+    <string name="readAllCategory">전체</string>
+    <string name="readTimeCapsuleDefaultImage">열람 불가능 타임캡슐 이미지</string>
+    <string name="readUnViewableD">D-7</string>
 </resources>
