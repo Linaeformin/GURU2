@@ -1,9 +1,11 @@
 package com.example.timecapsule
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.edit
 import com.example.timecapsule.databinding.ActivityLoginBinding
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -11,7 +13,13 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class LoginActivity : AppCompatActivity() {
+
     private lateinit var binding: ActivityLoginBinding
+    private lateinit var sharedPreferences: SharedPreferences
+
+    companion object {
+        const val ACCESS_TOKEN="token"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,6 +27,9 @@ class LoginActivity : AppCompatActivity() {
         //화면 설정
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // SharedPreferences 초기화
+        sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE)
 
         //로그인 버튼을 클릭했을 때
         binding.loginLoginBtn.setOnClickListener {
@@ -50,35 +61,41 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    //로그인 API 연동
+    // 로그인 API 연동
     private fun callLoginApi(username: String, password: String) {
-        //로그인 요청 데이터 생성
+        // 로그인 요청 데이터 생성
         val loginRequest = ApiService.UserRequest(username, password)
 
-        //Retrofit으로 로그인 API 호출
-        RetrofitClient.instance.login(loginRequest).enqueue(object : Callback<ResponseBody> {
+        // Retrofit으로 로그인 API 호출
+        RetrofitClient.Service.login(loginRequest).enqueue(object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-
-                //서버 응답에 성공한 경우
                 if (response.isSuccessful) {
+                    // 서버 응답 본문을 문자열로 읽어오기
+                    val responseBody = response.body()?.string()
 
-                    //메인 Activity로 화면 전환
-                    val intent=Intent(this@LoginActivity,MainActivity::class.java)
-                    startActivity(intent)
+                    if (responseBody != null) {
+                        // SharedPreferences에 토큰 저장
+                        sharedPreferences.edit {
+                            putString(ACCESS_TOKEN, responseBody.toString())
+                        }
 
-                    // 현재 Activity 종료
-                    finish()
-
+                        // 로그인 성공 후 다음 작업 (예: 메인 액티비티로 전환)
+                        val intent = Intent(this@LoginActivity, MainActivity::class.java)
+                        startActivity(intent)
+                        finish() // 현재 액티비티 종료
+                    } else {
+                        // 응답 본문이 null인 경우
+                        Toast.makeText(this@LoginActivity, "응답 본문이 비어있습니다.", Toast.LENGTH_SHORT).show()
+                    }
                 } else {
-
-                    //사용자에게 실패 메시지 출력
-                    Toast.makeText(this@LoginActivity, "등록된 아이디가 아니거나 비밀번호가 아닙니다.", Toast.LENGTH_SHORT).show()
+                    // 응답 실패 시
+                    Toast.makeText(this@LoginActivity, "로그인 실패: ${response.code()}", Toast.LENGTH_SHORT).show()
                 }
             }
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                //네트워크 요청 실패 처리
-                Toast.makeText(this@LoginActivity, "로그인 요청 실패: ${t.message}", Toast.LENGTH_SHORT).show()
+                // API 호출 실패 시
+                Toast.makeText(this@LoginActivity, "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }

@@ -47,7 +47,7 @@ class SignUpActivity : AppCompatActivity() {
         val userRequest = ApiService.UserRequest(username, password)
 
         //Retrofit으로 회원가입 API 호출
-        RetrofitClient.instance.signUp(userRequest).enqueue(object : Callback<ResponseBody> {
+        RetrofitClient.Service.signUp(userRequest).enqueue(object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
 
                 //서버 응답에 성공한 경우
@@ -65,7 +65,6 @@ class SignUpActivity : AppCompatActivity() {
                     finish()
 
                 } else {
-
                     //사용자에게 실패 메시지 출력
                     val errorBody = response.errorBody()?.string()
                     Toast.makeText(this@SignUpActivity, "${errorBody ?: response.message()}입니다.", Toast.LENGTH_SHORT).show()

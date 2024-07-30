@@ -1,5 +1,7 @@
 package com.example.timecapsule
 
+import ApiService
+import RetrofitClient
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
@@ -14,15 +16,27 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.timecapsule.databinding.FragmentWriteBinding
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import java.time.LocalDate
 import android.Manifest
-import android.util.Log
+import android.content.Context
+import android.provider.MediaStore
+import androidx.activity.result.contract.ActivityResultContracts
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONObject
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import java.io.File
 
-private var settingOption: Int=0    //설정 옵션 정의
+private var settingOption: Int = 0    //설정 옵션 정의
 
 class WriteFragment : Fragment() {
     //바인딩 설정
@@ -30,18 +44,40 @@ class WriteFragment : Fragment() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var categoryDialog: CategoryDialog? = null
 
-    //열람 가능일을 받을 변수
-    private var year: String=""
-    private var month: String=""
-    private var day: String=""
+    //열람 가능한 년도, 월, 일을 받을 변수
+    private var year: String = ""
+    private var month: String = ""
+    private var day: String = ""
 
-    private val locationCode = 1
+    //열람 가능일 변수
+    private var openDate: String = ""
 
     private val galleryCode = 100
-    private val selectedImages=mutableListOf<Uri>()
+    private val selectedImages = mutableListOf<Uri>()
+    private var imageUri: Uri? = null
 
-    private var latitude:Double=0.0
-    private var longitude:Double=0.0
+    //위도와 경도를 받을 변수
+    private var latitude: Double = 0.0
+    private var longitude: Double = 0.0
+
+    // 위치 권한 요청 런처
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        if (permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true &&
+            permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
+        ) {
+            // 권한이 허용된 경우 위치 가져오기
+            getLastLocation()
+        }
+        else {
+            //위치 권한이 없을 경우 로그인 화면으로 전환
+            Toast.makeText(requireContext(),"위치 권한이 없습니다. 설정에서 권한을 설정해주세요.",Toast.LENGTH_SHORT).show()
+            val intent=Intent(requireActivity(),LoginActivity::class.java)
+            startActivity(intent)
+        }
+    }
+
 
     @SuppressLint("SetTextI18n")
     @RequiresApi(Build.VERSION_CODES.O)
@@ -57,46 +93,45 @@ class WriteFragment : Fragment() {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
         // 위치 권한 확인 및 요청
-        if (ActivityCompat.checkSelfPermission(
+        if (ContextCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+            ) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            ActivityCompat.requestPermissions(
-                requireActivity(),
+            // 권한 요청
+            requestPermissionLauncher.launch(
                 arrayOf(
                     Manifest.permission.ACCESS_FINE_LOCATION,
                     Manifest.permission.ACCESS_COARSE_LOCATION
-                ),
-                locationCode
+                )
             )
         } else {
-            // 권한이 이미 허용된 경우
+            // 권한이 이미 허용된 경우 위치 가져오기
             getLastLocation()
         }
 
-        //열람 가능일 설정으로 기본 세팅
+        // 열람 가능일 설정으로 기본 세팅
         binding.writeSettingRg.check(R.id.write_setting_rb)
 
-        //현재 날짜를 받아 textView에 반영
+        // 현재 날짜를 받아 textView에 반영
         getCurrentDate()
 
-        //radioGroup에 체인지 리스너 설정
-        binding.writeSettingRg.setOnCheckedChangeListener{ _, checkedId ->
-            settingOption=checkedId
+        // radioGroup에 체인지 리스너 설정
+        binding.writeSettingRg.setOnCheckedChangeListener { _, checkedId ->
+            settingOption = checkedId
 
-            //체크한 옵션에 따라 textView 설정
-            when(checkedId) {
+            // 체크한 옵션에 따라 textView 설정
+            when (checkedId) {
                 R.id.write_setting_rb -> {
-                    binding.writeCalendarBtn.visibility=View.VISIBLE
-                    binding.writeDateTv.text= "$year.$month.$day"
+                    binding.writeCalendarBtn.visibility = View.VISIBLE
+                    binding.writeDateTv.text = "$year.$month.$day"
                 }
                 R.id.write_no_setting_rb -> {
-                    binding.writeDateTv.text="즉시 열람 가능"
-                    binding.writeCalendarBtn.visibility=View.GONE
+                    binding.writeDateTv.text = "즉시 열람 가능"
+                    binding.writeCalendarBtn.visibility = View.GONE
                 }
             }
         }
@@ -125,17 +160,19 @@ class WriteFragment : Fragment() {
         //등록 버튼을 눌렀을 때
         binding.writePostBtn.setOnClickListener {
             //제목과 내용을 입력하지 않은 채로 등록을 시도하는 경우, 토스트 메시지 출력
-            if(binding.writeTitleEt.text.toString().isEmpty()||binding.writeContentEt.text.toString().isEmpty()){
-                if(binding.writeTitleEt.text.toString().isEmpty()){
+            if (binding.writeTitleEt.text.toString().isEmpty() || binding.writeContentEt.text.toString().isEmpty() || binding.writeCategoryTv.text.toString() == "설정 안 함") {
+                if (binding.writeTitleEt.text.toString().isEmpty()) {
                     Toast.makeText(requireContext(), "제목을 입력하세요.", Toast.LENGTH_SHORT).show()
                 }
-                if(binding.writeContentEt.text.toString().isEmpty()){
+                if (binding.writeContentEt.text.toString().isEmpty()) {
                     Toast.makeText(requireContext(), "내용을 입력하세요.", Toast.LENGTH_SHORT).show()
                 }
-            }
-            //제목과 내용을 입력하고 등록을 시도한 경우, 토스트 메시지 출력 및 홈으로 화면 전환
-            else {
-                Toast.makeText(requireContext(),"등록되었습니다.", Toast.LENGTH_SHORT).show()
+                if (binding.writeCategoryTv.text.toString() == "설정 안 함") {
+                    Toast.makeText(requireContext(), "카테고리를 설정하세요.", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                getOpenDate()   //열람 가능일을 정하는 코드
+                callWriteApi()    //서버 api 연동
 
                 //홈으로 화면 전환
                 val homeFragment = HomeFragment() // homeFragment 인스턴스 생성
@@ -151,6 +188,41 @@ class WriteFragment : Fragment() {
         return binding.root
     }
 
+    private fun getLastLocation() {
+        val locationCode = 1
+        // 위치 권한 확인 및 요청
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ),
+                locationCode
+            )
+        } else {
+            fusedLocationClient.lastLocation.addOnCompleteListener { task ->
+                if (task.isSuccessful && task.result != null) {
+                    val location = task.result
+                    latitude = location?.latitude!!
+                    longitude = location.longitude
+                    // 위치 정보를 처리합니다.
+                    Toast.makeText(
+                        requireContext(),
+                        "Latitude: $latitude, Longitude: $longitude",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        }
+    }
 
     @SuppressLint("SetTextI18n")
     @RequiresApi(Build.VERSION_CODES.O)
@@ -163,14 +235,14 @@ class WriteFragment : Fragment() {
 
             //각 요소에 해당하는 값에 대입
             if (result != null) {
-                result.let{
-                    year= it[0].toString()
-                    month=it[1].toString()
-                    day=it[2].toString()
+                result.let {
+                    year = it[0].toString()
+                    month = it[1].toString()
+                    day = it[2].toString()
                 }
 
                 //textView에 반영
-                binding.writeDateTv.text= "$year.$month.$day"
+                binding.writeDateTv.text = "$year.$month.$day"
 
             } else {
                 //설정한 날짜가 없다면 현재 날짜 유지
@@ -181,11 +253,10 @@ class WriteFragment : Fragment() {
 
     // 캘린더 팝업창 출력
     private fun popupCalendar() {
-
         //캘린더에 데이터 전달
-        val dialog=CalendarDialog().apply {
-            arguments=Bundle().apply {
-                putString("calendarDate","$year-$month-$day")
+        val dialog = CalendarDialog().apply {
+            arguments = Bundle().apply {
+                putString("calendarDate", "$year-$month-$day")
             }
         }
         dialog.show(parentFragmentManager, "")  //CalendarDialog 실행
@@ -209,15 +280,26 @@ class WriteFragment : Fragment() {
     @RequiresApi(Build.VERSION_CODES.O)
     private fun getCurrentDate() {
         //오늘의 년도, 월, 일을 변수에 저장
-        val currentDate=LocalDate.now()
+        val currentDate = LocalDate.now()
 
         //오늘의 년도, 월, 일을 저장
-        year=currentDate.year.toString()
-        month=currentDate.monthValue.toString()
-        day=currentDate.dayOfMonth.toString()
+        year = currentDate.year.toString()
+        month = currentDate.monthValue.toString()
+        day = currentDate.dayOfMonth.toString()
 
         //열람 가능일로 textView 저장
-        binding.writeDateTv.text= "$year.$month.$day"
+        binding.writeDateTv.text = "$year.$month.$day"
+    }
+
+    //타임캡슐이 열리는 날짜
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun getOpenDate(): String {
+        //설정하지 않았을 경우, 열람 가능 날짜를 오늘로 설정
+        if(binding.writeDateTv.text == "즉시 열람 가능"){
+            getCurrentDate()
+        }
+        openDate = "$year-${month.padStart(2, '0')}-${day.padStart(2, '0')}T00:00:00"
+        return openDate
     }
 
     //갤러리 오픈
@@ -259,53 +341,81 @@ class WriteFragment : Fragment() {
 
         // 선택된 이미지 목록에 추가
         selectedImages.add(uri)
+
+        imageUri = uri
     }
 
     // dp를 px로 변환하는 메서드
     private fun dpToPx(): Int {
-        val density = resources.displayMetrics.density.toInt()  //디스플레이의 밀도 저장
-        return (200 * density)  //200dp로 설정
+        val density = resources.displayMetrics.density //디스플레이의 밀도 저장
+        return (200 * density).toInt() //200dp로 설정
     }
 
-    private fun getLastLocation() {
-        val locationCode = 1
-        // 위치 권한 확인 및 요청
-        if (ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            Log.d("위치1","SUCCESS")
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                arrayOf(
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                ),
-                locationCode
-            )
-        } else {
-            Log.d("위치2","SUCCESS")
-            fusedLocationClient.lastLocation.addOnCompleteListener { task ->
-                if (task.isSuccessful && task.result != null) {
-                    val location = task.result
-                    latitude = location?.latitude!!
-                    longitude = location.longitude
-                    Log.d("위치3","Latitude: $latitude, Longitude: $longitude")
-                    // 위치 정보를 처리합니다.
-                    Toast.makeText(
-                        requireContext(),
-                        "Latitude: $latitude, Longitude: $longitude",
-                        Toast.LENGTH_SHORT
-                    ).show()
+
+    private fun callWriteApi() {
+        //토큰을 저장하는 변수
+        val accessToken = getAccessToken()
+        val bearerToken = "Bearer $accessToken"
+
+        //jsonObject 객체 생성 및 데이터 삽입
+        val jsonObject=JSONObject()
+
+        jsonObject.put("title",binding.writeTitleEt.text.toString())
+        jsonObject.put("content",binding.writeContentEt.text.toString())
+        jsonObject.put("category",binding.writeCategoryTv.text.toString())
+        jsonObject.put("viewableAt",openDate)
+        jsonObject.put("latitude",latitude)
+        jsonObject.put("longitude",longitude)
+
+        // JSON 문자열로 변환
+        val jsonString = jsonObject.toString()
+
+        // JSON 문자열을 RequestBody로 변환
+        val mediaType = "application/json".toMediaTypeOrNull()
+        val requestBody = jsonString.toRequestBody(mediaType)
+
+        //이미지 파일 MultipartBody.Part로 저장하는 변수
+        val imageFile = imageUri?.let { File(absolutelyPath(it, requireContext())) }
+        val requestFile = imageFile?.asRequestBody("image/*".toMediaTypeOrNull())
+        var body = requestFile?.let { MultipartBody.Part.createFormData("imageFile", imageFile.name, it) }
+
+        //이미지를 삽입하지 않았을 때 이미지의 값을 null로 설정
+        if(imageFile==null){
+            body=null
+        }
+
+        //글쓰기 Api 연동
+        RetrofitClient.Service.writeTimeCapsule(bearerToken, body, requestBody).enqueue(object : Callback<ApiService.TimeCapsuleResponse> {
+            override fun onResponse(call: Call<ApiService.TimeCapsuleResponse>, response: Response<ApiService.TimeCapsuleResponse>) {
+                if (response.isSuccessful) {
+                    Toast.makeText(requireContext(), "등록되었습니다.", Toast.LENGTH_SHORT).show()
                 } else {
-                    Toast.makeText(requireContext(), "Location not found", Toast.LENGTH_SHORT)
-                        .show()
+                    Toast.makeText(requireContext(), "등록에 실패했습니다. 잠시 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
                 }
             }
-        }
+
+            override fun onFailure(call: Call<ApiService.TimeCapsuleResponse>, t: Throwable) {
+                Toast.makeText(requireContext(), "네트워크 오류.", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    //로그인에서 보낸 SharedPreference로 accessToken 가져오기
+    private fun getAccessToken(): String? {
+        val sharedPreferences = activity?.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        return sharedPreferences?.getString(LoginActivity.ACCESS_TOKEN, null)
+    }
+
+    //절대 경로를 구하는 함수
+    @SuppressLint("Recycle")
+    private fun absolutelyPath(path: Uri?, context: Context): String {
+        val proj=arrayOf(MediaStore.Images.Media.DATA)
+        val c=context.contentResolver.query(path!!, proj, null, null, null)
+        val index=c?.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+        c?.moveToFirst()
+
+        val result=c?.getString(index!!)
+
+        return result!!
     }
 }

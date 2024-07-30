@@ -1,28 +1,25 @@
-package com.example.timecapsule
 
-import ApiService
-import com.google.gson.GsonBuilder
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
-    private const val BASE_URL = "https://port-0-guru2-backend-g0424l70py8py.gksl2.cloudtype.app/"  //기본 URL 지정
 
-    //Retrofit 인스턴스의 싱글톤 객체
-    val instance: ApiService by lazy {
-
-        //Gson 인스턴스 생성 및 설정
-        val gson = GsonBuilder().setLenient().create()
-
-        //Retrofit 객체 생성
-        val retrofit = Retrofit.Builder()
-            .baseUrl(BASE_URL)  //기본 URL 설정
-            .addConverterFactory(GsonConverterFactory.create(gson)) // GsonConverterFactory를 사용하여 JSON 변환
-            .build()
-
-        //Retrofit 인스턴스 생성
-        retrofit.create(ApiService::class.java)
+    val logging = HttpLoggingInterceptor().apply {
+        level = HttpLoggingInterceptor.Level.BODY  // BODY 레벨로 설정하여 요청/응답의 본문 내용까지 로그로 출력
     }
+
+    private const val BASE_URL = "https://port-0-guru2-backend-g0424l70py8py.gksl2.cloudtype.app/" // 실제 API 기본 URL로 대체
+
+    val retrofit = Retrofit.Builder()
+        .baseUrl(BASE_URL)
+        .addConverterFactory(GsonConverterFactory.create())
+        .client(OkHttpClient.Builder().addInterceptor(logging).build()) // 로깅 인터셉터 추가
+        .build()
+
+    val Service: ApiService= retrofit.create(ApiService::class.java)
 }
+
 
 
