@@ -36,7 +36,7 @@
             android:value="m4rj2b8ou4"/>
 
         <activity
-            android:name=".LoginActivity"
+            android:name=".SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -49,6 +49,8 @@
             android:exported="true"/>
         <activity
             android:name=".SignUpActivity"
+            android:exported="true"/>
+        <activity android:name=".LoginActivity"
             android:exported="true"/>
     </application>
 

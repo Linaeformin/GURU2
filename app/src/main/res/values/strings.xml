@@ -51,4 +51,6 @@
     <string name="readDetailCompleteDelete">삭제를 완료하시겠습니까?</string>
     <string name="readDetailCancelBtn">취소</string>
     <string name="readDetailCompleteBtn">완료</string>
+    <string name="splash1">splash 이미지 1</string>
+    <string name="splash2">splash 이미지 2</string>
 </resources>
