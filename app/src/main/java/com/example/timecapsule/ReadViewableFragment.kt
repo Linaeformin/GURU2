@@ -41,7 +41,7 @@ class ReadViewableFragment: Fragment() {
         // 각 아이템을 클릭했을 때 게시글 상세보기 페이지로 전환
         goToReadDetail()
 
-        //CategoryDialog에서 보낸 selectedCategory 내의 카테고리를 textView에 반영
+        //부모 fragment에서 보낸 selectedCategory 내의 카테고리를 textView에 반영
         parentFragmentManager.setFragmentResultListener("categorySelection", this) { _, bundle ->
             category = bundle.getString("selectedCategory").toString()
             callReadViewableApi()
@@ -69,11 +69,14 @@ class ReadViewableFragment: Fragment() {
     }
 
 
-    // 열람 가능한 캡슐을 RVA로 보여주는 코드
+    //열람 가능한 타임캡슐 데이터를 받아옴
     private fun callReadViewableApi() {
+
+        // 로그인에서 보낸 SharedPreference로 accessToken 가져오고 BearerToken 형식으로 저장
         val accessToken = getAccessToken()
         val bearerToken = "Bearer $accessToken"
 
+        //서버 연동
         RetrofitClient.Service.getViewableTimeCapsules(bearerToken, category).enqueue(object :
             Callback<List<ViewableCapsule>> {
             @SuppressLint("NotifyDataSetChanged")
@@ -83,6 +86,8 @@ class ReadViewableFragment: Fragment() {
             ) {
                 if (response.isSuccessful) {
                     val viewableTimeCapsule = response.body()
+
+                    //ViewableTimeCapsule 데이터를 초기화하고 각 항목을 데이터 클래스에 저장
                     viewableTimeCapsule?.let { capsules ->
                         viewableCapsuleData.clear()
                         viewableCapsuleData.addAll(capsules.map { item ->
@@ -97,6 +102,7 @@ class ReadViewableFragment: Fragment() {
                                 longitude = item.longitude
                             )
                         })
+                        //데이터가 바뀌었음을 명시
                         viewableRVAdapter.notifyDataSetChanged()
                     }
                 } else {

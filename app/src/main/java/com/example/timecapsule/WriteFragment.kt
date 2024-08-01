@@ -214,12 +214,6 @@ class WriteFragment : Fragment() {
                     val location = task.result
                     latitude = location?.latitude!!
                     longitude = location.longitude
-                    // 위치 정보를 처리합니다.
-                    Toast.makeText(
-                        requireContext(),
-                        "Latitude: $latitude, Longitude: $longitude",
-                        Toast.LENGTH_SHORT
-                    ).show()
                 }
             }
         }
