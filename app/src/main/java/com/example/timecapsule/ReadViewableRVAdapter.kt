@@ -44,6 +44,21 @@ class ReadViewableRVAdapter (private val capsuleList: ArrayList<ViewableCapsule>
         fun bind(capsule: ViewableCapsule){
             //제목과 이미지를 각 아이템에 반영
             binding.itemReadCapsuleTitleTv.text=capsule.title
+
+            val range=(1..4)
+            val random=range.random()
+            if(random==1){
+                binding.itemReadCapsuleImageIv.setImageResource(R.drawable.read_timecapsule_1)
+            }
+            else if(random==2){
+                binding.itemReadCapsuleImageIv.setImageResource(R.drawable.read_timecapsule_2)
+            }
+            else if(random==3){
+                binding.itemReadCapsuleImageIv.setImageResource(R.drawable.read_timecapsule_3)
+            }
+            else {
+                binding.itemReadCapsuleImageIv.setImageResource(R.drawable.read_timecapsule_4)
+            }
         }
     }
 
