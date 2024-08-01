@@ -1,6 +1,5 @@
 package com.example.timecapsule
 
-import ApiService
 import RetrofitClient
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -25,11 +24,13 @@ import java.time.LocalDate
 import android.Manifest
 import android.content.Context
 import android.provider.MediaStore
+import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.ResponseBody
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
@@ -357,6 +358,8 @@ class WriteFragment : Fragment() {
         val accessToken = getAccessToken()
         val bearerToken = "Bearer $accessToken"
 
+        Log.d("토큰",bearerToken)
+
         //jsonObject 객체 생성 및 데이터 삽입
         val jsonObject=JSONObject()
 
@@ -385,8 +388,8 @@ class WriteFragment : Fragment() {
         }
 
         //글쓰기 Api 연동
-        RetrofitClient.Service.writeTimeCapsule(bearerToken, body, requestBody).enqueue(object : Callback<ApiService.TimeCapsuleResponse> {
-            override fun onResponse(call: Call<ApiService.TimeCapsuleResponse>, response: Response<ApiService.TimeCapsuleResponse>) {
+        RetrofitClient.Service.writeTimeCapsule(bearerToken, body, requestBody).enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 if (response.isSuccessful) {
                     Toast.makeText(requireContext(), "등록되었습니다.", Toast.LENGTH_SHORT).show()
                 } else {
@@ -394,7 +397,7 @@ class WriteFragment : Fragment() {
                 }
             }
 
-            override fun onFailure(call: Call<ApiService.TimeCapsuleResponse>, t: Throwable) {
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                 Toast.makeText(requireContext(), "네트워크 오류.", Toast.LENGTH_SHORT).show()
             }
         })

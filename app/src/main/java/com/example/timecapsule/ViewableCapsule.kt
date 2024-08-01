@@ -1,6 +1,12 @@
 package com.example.timecapsule
 
 data class ViewableCapsule(
-    var coverImg:Int?=null,
-    var title: String?=""
+    val id: Int,
+    val title: String,
+    val content: String,
+    val category: String,
+    val fileName: String,
+    val viewableAt: String,
+    val latitude: Double,
+    val longitude: Double
 )

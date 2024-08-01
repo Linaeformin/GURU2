@@ -1,13 +1,16 @@
+import com.example.timecapsule.ViewableCapsule
 import com.google.gson.annotations.SerializedName
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
+import retrofit2.http.Query
 
 interface ApiService {
 
@@ -32,18 +35,13 @@ interface ApiService {
         @Header("Authorization") authorization: String?,
         @Part imageFile: MultipartBody.Part?,
         @Part("timecapsuleReqDto") timecapsuleReqDto: RequestBody
-    ): Call<TimeCapsuleResponse>
+    ): Call<ResponseBody>
 
-    // 글쓰기 데이터
-    data class TimeCapsuleResponse(
-        val title: String,
-        val content: String,
-        val category: String,
-        val fileName: String,
-        val viewableAt: String,
-        val latitude: Double,
-        val longitude: Double
-    )
+    @GET("api/timecapsules/view")
+    fun getViewableTimeCapsules(
+        @Header("Authorization") authorization: String?,
+        @Query("category") category: String
+    ): Call<List<ViewableCapsule>>
 }
 
 
