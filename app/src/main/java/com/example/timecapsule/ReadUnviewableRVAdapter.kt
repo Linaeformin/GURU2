@@ -8,7 +8,7 @@ import com.example.timecapsule.databinding.ItemTimecapsuleUnviewableBinding
 class ReadUnviewableRVAdapter(private val capsuleList: ArrayList<UnviewableCapsule>): RecyclerView.Adapter<ReadUnviewableRVAdapter.ViewHolder>() {
 
     interface MyItemClickListener {
-        fun onItemViewableClick(unviewableCapsule: UnviewableCapsule)
+        fun onItemUnviewableClick(unviewableCapsule: UnviewableCapsule)
     }
 
     private lateinit var mItemClickListener: MyItemClickListener
@@ -36,7 +36,7 @@ class ReadUnviewableRVAdapter(private val capsuleList: ArrayList<UnviewableCapsu
         if (position >= 0 && position < capsuleList.size) {
             holder.bind(capsuleList[position])
             holder.itemView.setOnClickListener {
-                mItemClickListener.onItemViewableClick(capsuleList[position])
+                mItemClickListener.onItemUnviewableClick(capsuleList[position])
             }
         }
     }
@@ -46,6 +46,7 @@ class ReadUnviewableRVAdapter(private val capsuleList: ArrayList<UnviewableCapsu
         fun bind(capsule: UnviewableCapsule) {
             //제목을 각 아이템에 반영
             binding.itemReadCapsuleTitleTv.text = capsule.title
+            binding.itemReadCapsuleDayTv.text=capsule.viewableAt
         }
     }
 }

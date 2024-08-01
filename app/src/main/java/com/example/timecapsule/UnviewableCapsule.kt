@@ -1,5 +1,7 @@
 package com.example.timecapsule
 
 data class UnviewableCapsule(
-    var title: String?=""
+    val id: Int,
+    val title: String,
+    val viewableAt: String,
 )

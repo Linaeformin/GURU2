@@ -1,3 +1,4 @@
+import com.example.timecapsule.UnviewableCapsule
 import com.example.timecapsule.ViewableCapsule
 import com.google.gson.annotations.SerializedName
 import okhttp3.MultipartBody
@@ -10,6 +11,7 @@ import retrofit2.http.Header
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface ApiService {
@@ -42,6 +44,18 @@ interface ApiService {
         @Header("Authorization") authorization: String?,
         @Query("category") category: String
     ): Call<List<ViewableCapsule>>
+
+    @GET("api/timecapsules/viewable/{id}")
+    fun getViewableDetail(
+        @Header("Authorization") authorization: String?,
+        @Path("id") id: Int
+    ): Call<ViewableCapsule>
+
+    @GET("api/timecapsules/unviewable")
+    fun getUnviewableTimeCapsules(
+        @Header("Authorization") authorization: String?,
+        @Query("category") category: String
+    ): Call<List<UnviewableCapsule>>
 }
 
 

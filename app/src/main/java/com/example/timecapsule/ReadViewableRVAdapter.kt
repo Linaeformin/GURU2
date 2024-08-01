@@ -1,6 +1,5 @@
 package com.example.timecapsule
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -45,8 +44,6 @@ class ReadViewableRVAdapter (private val capsuleList: ArrayList<ViewableCapsule>
         fun bind(capsule: ViewableCapsule){
             //제목과 이미지를 각 아이템에 반영
             binding.itemReadCapsuleTitleTv.text=capsule.title
-            Log.d("제목",capsule.title)
-            //binding.itemReadCapsuleImageIv.setImageResource(capsule.coverImg!!)
         }
     }
 
