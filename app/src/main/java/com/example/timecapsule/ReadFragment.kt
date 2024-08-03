@@ -11,6 +11,7 @@ import com.example.timecapsule.databinding.FragmentReadBinding
 import com.google.android.material.tabs.TabLayoutMediator
 
 class ReadFragment : Fragment() {
+    //바인딩 설정
     private lateinit var binding: FragmentReadBinding
 
     override fun onCreateView(
@@ -83,6 +84,7 @@ class ReadFragment : Fragment() {
         clickedTextView.setTypeface(null, Typeface.BOLD)
     }
 
+    //선택된 카테고리 데이터를 전송하는 코드
     private fun sendCategoryOption(option: String) {
         val result = Bundle()
         result.putString("selectedCategory", option)

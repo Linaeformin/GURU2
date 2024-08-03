@@ -18,7 +18,7 @@ import java.time.LocalDate
 import java.util.Date
 
 class CalendarDialog : DialogFragment() {
-
+    //바인딩 설정
     private lateinit var binding: DialogCalendarBinding
 
     @RequiresApi(Build.VERSION_CODES.O)

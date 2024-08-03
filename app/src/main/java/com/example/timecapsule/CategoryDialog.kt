@@ -12,7 +12,7 @@ import com.example.timecapsule.databinding.DialogWriteCategoryBinding
 private var categoryOption: Int = 0     //이전 옵션 정의
 
 class CategoryDialog : DialogFragment() {
-
+    //바인딩 설정
     private lateinit var binding: DialogWriteCategoryBinding
 
     override fun onCreateView(

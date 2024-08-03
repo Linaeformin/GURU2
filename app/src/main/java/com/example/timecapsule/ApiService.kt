@@ -18,21 +18,15 @@ import retrofit2.http.Query
 
 interface ApiService {
 
-    //회원가입 POST 요청 정의
+    //회원가입 POST 요청
     @POST("api/signup")
     fun signUp(@Body userRequest: UserRequest): Call<ResponseBody>
 
-    //회원가입 데이터
-    data class UserRequest(
-        @SerializedName("username") val username: String,
-        @SerializedName("password") val password: String
-    )
-
-    //로그인 POST 요청 정의
+    //로그인 POST 요청
     @POST("api/login")
     fun login(@Body userRequest: UserRequest): Call<ResponseBody>
 
-    //글쓰기 POST 요청 정의
+    //글쓰기 POST 요청
     @Multipart
     @POST("api/timecapsules/")
     fun writeTimeCapsule(
@@ -41,35 +35,47 @@ interface ApiService {
         @Part("timecapsuleReqDto") timecapsuleReqDto: RequestBody
     ): Call<ResponseBody>
 
+    //열람 가능한 타임캡슐 카테고리별로 GET 요청
     @GET("api/timecapsules/view")
     fun getViewableTimeCapsules(
         @Header("Authorization") authorization: String?,
         @Query("category") category: String
     ): Call<List<ViewableCapsule>>
 
+    //열람 가능한 타임캡슐 id별로 GET 요청
     @GET("api/timecapsules/viewable/{id}")
     fun getViewableDetail(
         @Header("Authorization") authorization: String?,
         @Path("id") id: Int
     ): Call<ViewableCapsule>
 
+    //열람 불가능한 타임캡슐 카테고리별로 GET 요청
     @GET("api/timecapsules/unviewable")
     fun getUnviewableTimeCapsules(
         @Header("Authorization") authorization: String?,
         @Query("category") category: String
     ): Call<List<UnviewableCapsule>>
 
+    //타임캡슐 id별로 GET 요청
     @GET("api/timecapsules/main/{id}")
     fun getHomeTimeCapsule(
         @Header("Authorization") authorization: String?,
         @Path("id") id: Int
     ): Call<HomeTimeCapsuleDetail>
 
+    //타임캡슐 id별로 DELETE 요청
     @DELETE("api/timecapsules/{id}")
     fun deleteTimeCapsule(
         @Header("Authorization") authorization: String?,
         @Path("id") id: Int,
     ): Call<ResponseBody>
+
+
+    //회원가입 데이터
+    data class UserRequest(
+        @SerializedName("username") val username: String,
+        @SerializedName("password") val password: String
+    )
 }
 
 

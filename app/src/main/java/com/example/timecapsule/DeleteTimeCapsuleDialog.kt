@@ -4,6 +4,8 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -35,21 +37,26 @@ class DeleteTimeCapsuleDialog : DialogFragment() {
         binding.dialogDeleteYesBtn.setOnClickListener{
             callDeleteApi()
 
-            //열람하기로 화면 전환
+            //화면 전환을 위한 변수 선언
             val readFragment = ReadFragment() // homeFragment 인스턴스 생성
             val transaction = parentFragmentManager.beginTransaction()
 
-            Bundle().putBoolean("Delete", true)
-            readFragment.arguments=Bundle()
-
+            //열람하기로 화면 전환
             transaction.replace(R.id.main_frameLayout, readFragment)
             transaction.addToBackStack(null)
             transaction.commit()
 
             // 바텀 네비게이션에서 열람하기를 선택한 상태로 설정
             (requireActivity() as MainActivity).setSelectedNavItem(R.id.readFragment)
+
+            //FragmentTransaction이 완료되도록 강제 실행
+            parentFragmentManager.executePendingTransactions()
+
+            //dialog를 2초 뒤에 사라지게 하는 코드
+            dismissDialog()
         }
 
+        //취소를 클릭했을 때
         binding.dialogDeleteNoBtn.setOnClickListener {
             dismiss()
         }
@@ -57,6 +64,7 @@ class DeleteTimeCapsuleDialog : DialogFragment() {
         return binding.root
     }
 
+    //타임캡슐 삭제하기 Api 연동
     private fun callDeleteApi(){
         // 로그인에서 보낸 SharedPreference로 accessToken 가져오고 BearerToken 형식으로 저장
         val accessToken = getAccessToken()
@@ -89,5 +97,14 @@ class DeleteTimeCapsuleDialog : DialogFragment() {
     private fun getAccessToken(): String? {
         val sharedPreferences = activity?.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
         return sharedPreferences?.getString(LoginActivity.ACCESS_TOKEN, null)
+    }
+
+    //dialog를 2초 뒤에 사라지게 하는 코드
+    private fun dismissDialog() {
+        Handler(Looper.getMainLooper()).postDelayed({
+            if (isAdded) {
+                dismiss()
+            }
+        }, 200)
     }
 }
