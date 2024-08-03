@@ -13,10 +13,13 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class LoginActivity : AppCompatActivity() {
-
+    //바인딩 설정
     private lateinit var binding: ActivityLoginBinding
+
+    //sharedPreference 설정
     private lateinit var sharedPreferences: SharedPreferences
 
+    //토큰 정의
     companion object {
         const val ACCESS_TOKEN="token"
     }
@@ -89,7 +92,7 @@ class LoginActivity : AppCompatActivity() {
                     }
                 } else {
                     // 응답 실패 시
-                    Toast.makeText(this@LoginActivity, "로그인 실패: ${response.code()}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@LoginActivity, "아이디나 비밀번호가 다릅니다.", Toast.LENGTH_SHORT).show()
                 }
             }
 

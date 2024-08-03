@@ -6,6 +6,7 @@ import android.view.WindowManager
 import com.example.timecapsule.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
+    //바인딩 설정
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {

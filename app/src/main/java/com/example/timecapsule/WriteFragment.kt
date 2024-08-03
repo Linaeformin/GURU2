@@ -36,7 +36,8 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
 
-private var settingOption: Int = 0    //설정 옵션 정의
+//설정 옵션 정의
+private var settingOption: Int = 0
 
 class WriteFragment : Fragment() {
     //바인딩 설정
@@ -77,7 +78,6 @@ class WriteFragment : Fragment() {
             startActivity(intent)
         }
     }
-
 
     @SuppressLint("SetTextI18n")
     @RequiresApi(Build.VERSION_CODES.O)
@@ -198,9 +198,12 @@ class WriteFragment : Fragment() {
                 locationCode
             )
         } else {
+            //위치 가져오기
             fusedLocationClient.lastLocation.addOnCompleteListener { task ->
                 if (task.isSuccessful && task.result != null) {
                     val location = task.result
+
+                    //위도와 경도에 대입
                     latitude = location?.latitude!!
                     longitude = location.longitude
                 }
@@ -335,15 +338,15 @@ class WriteFragment : Fragment() {
         return (200 * density).toInt() //200dp로 설정
     }
 
-
     private fun callWriteApi() {
         //토큰을 저장하는 변수
         val accessToken = getAccessToken()
         val bearerToken = "Bearer $accessToken"
 
-        //jsonObject 객체 생성 및 데이터 삽입
+        //jsonObject 객체 생성
         val jsonObject=JSONObject()
 
+        //데이터 삽입
         jsonObject.put("title",binding.writeTitleEt.text.toString())
         jsonObject.put("content",binding.writeContentEt.text.toString())
         jsonObject.put("category",binding.writeCategoryTv.text.toString())

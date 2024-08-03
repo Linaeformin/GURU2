@@ -18,10 +18,17 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class ReadUnviewableFragment: Fragment() {
+    //바인딩 설정
     private lateinit var binding: FragmentReadUnviewableBinding
+
+    //데이터 클래스 변수 설정
     private var unviewableCapsuleData=ArrayList<UnviewableCapsule>()
+
+    //RVAdapter 변수 설정
     private lateinit var unviewableRVAdapter: ReadUnviewableRVAdapter
-    private var category:String="전체"    //초기 카테고리는 전체로 설정
+
+    //초기 카테고리는 전체로 설정
+    private var category:String="전체"
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -43,7 +50,7 @@ class ReadUnviewableFragment: Fragment() {
         //부모 fragment에서 보낸 selectedCategory 내의 카테고리를 textView에 반영
         parentFragmentManager.setFragmentResultListener("categorySelection", this) { _, bundle ->
             category = bundle.getString("selectedCategory").toString()
-            callReadUnviewableApi()
+            callReadUnviewableApi()  //열람 불가능한 캡슐 데이터를 받아옴
         }
 
         return binding.root
@@ -91,20 +98,16 @@ class ReadUnviewableFragment: Fragment() {
                                 viewableAt = item.viewableAt
                             )
                         })
-
-                        for(i in 0..<unviewableCapsuleData.size){
-                            Log.d("데이터 클래스 확인",unviewableCapsuleData[i].id.toString())
-                        }
                         //데이터가 바뀌었음을 명시
                         unviewableRVAdapter.notifyDataSetChanged()
                     }
                 } else {
-                    Log.d("Error","Response failed: ${response.code()}")
+                    Log.d("에러","Response failed: ${response.code()}")
                 }
             }
 
             override fun onFailure(call: Call<List<UnviewableCapsule>>, t: Throwable) {
-                Log.d("Error", "API call failed: ${t.message}")
+                Log.d("에러", "API call failed: ${t.message}")
             }
 
         })

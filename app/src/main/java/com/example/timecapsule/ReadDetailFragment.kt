@@ -18,9 +18,16 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class ReadDetailFragment : Fragment() {
+    //바인딩 설정
     private lateinit var binding: FragmentReadDetailBinding
+
+    //데이터 클래스 변수 설정
     private var viewableCapsuleData = ArrayList<ViewableCapsule>()
+
+    //gson 변수 설정
     private var gson: Gson = Gson()
+
+    //데이터 변수 설정
     private var title: String=""
     private var content: String=""
     private var category: String=""
@@ -28,8 +35,8 @@ class ReadDetailFragment : Fragment() {
     private var viewableAt: String=""
     private var latitude: Double=0.0
     private var longitude: Double=0.0
-
     private var viewableCapsuleId: Int=-1
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -53,15 +60,20 @@ class ReadDetailFragment : Fragment() {
             (requireActivity() as MainActivity).setSelectedNavItem(R.id.readFragment)
         }
 
+        //삭제를 클릭했을 경우 삭제 dialog 팝업
         binding.readDetailDeleteTv.setOnClickListener {
             val deleteDialog=DeleteTimeCapsuleDialog().apply {
                 arguments=Bundle().apply {
+                    //게시글의 id 전달
                     putString("id",viewableCapsuleId.toString())
                 }
             }
             deleteDialog.show(parentFragmentManager,"DeleteDialog")
+
+            //삭제 textView의 style 변경
             binding.readDetailDeleteTv.setTypeface(null, Typeface.BOLD)
         }
+
         return binding.root
     }
 
@@ -75,8 +87,6 @@ class ReadDetailFragment : Fragment() {
         // 해당하는 항목(게시글)의 id 값을 gson으로 저장
         val viewableCapsuleJson=arguments?.getString("viewableCapsuleJson")
         viewableCapsuleId=gson.fromJson(viewableCapsuleJson, Int::class.java)
-
-        Log.d("왜지",viewableCapsuleId.toString())
 
         //서버 연동
         RetrofitClient.Service.getViewableDetail(bearerToken, viewableCapsuleId).enqueue(object:
@@ -106,12 +116,12 @@ class ReadDetailFragment : Fragment() {
                         }
 
                 } else {
-                    Log.d("Error", "Response failed: ${response.code()}")
+                    Log.d("에러", "Response failed: ${response.code()}")
                 }
             }
 
             override fun onFailure(call: Call<ViewableCapsule>, t: Throwable) {
-                Log.d("Error", "Response failed: ${t.message}")
+                Log.d("에러", "Response failed: ${t.message}")
             }
         })
     }

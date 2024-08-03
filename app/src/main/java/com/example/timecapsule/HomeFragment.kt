@@ -32,12 +32,22 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class HomeFragment : Fragment(), OnMapReadyCallback {
+    //바인딩 설정
     private lateinit var binding: FragmentHomeBinding
+
+    //네이버 맵 객체
     private lateinit var naverMap: NaverMap
+    //FusedLocationProviderClient 설정
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+
+    //타임캡슐 데이터 리스트 정의
     private var homeTimeCapsuleData = ArrayList<HomeTimeCapsule>()
     private var homeTimeCapsuleDetailData = ArrayList<HomeTimeCapsuleDetail>()
+
+    //인증 토큰 정의
     private var bearerToken: String = ""
+
+    //마커 아이콘 크기 정의
     private var iconSize: Int = 0
 
     // 위도와 경도를 받을 변수
@@ -55,7 +65,6 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         // FusedLocationProviderClient 초기화
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
-        Log.d("강종 위치","SUCCESS1")
         // 위치 권한 요청 런처
         val requestPermissionLauncher = registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions()
@@ -72,7 +81,6 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
                 startActivity(intent)
             }
         }
-        Log.d("강종 위치","SUCCESS2")
 
         // 위치 권한 확인 및 요청
         if (ContextCompat.checkSelfPermission(
@@ -95,21 +103,24 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
             getLastLocation()
         }
 
+        //MapFragment 초기화
         val fm = childFragmentManager
         val mapFragment = fm.findFragmentById(R.id.map_fragment) as MapFragment?
             ?: MapFragment.newInstance().also {
                 fm.beginTransaction().add(R.id.map_fragment, it).commit()
             }
-
         mapFragment.getMapAsync(this)
 
         try {
-            // CategoryDialog에서 보낸 selectedCategory 내의 카테고리를 textView에 반영
+            // HomeTimeCapsuleDetailDialog에서 보낸 캡슐의 id를 받아옴
             parentFragmentManager.setFragmentResultListener("detailId", this) { _, bundle ->
                 val result = bundle.getInt("postId")
+
+                //ReadDetailFragment로 이동
                 (context as MainActivity).supportFragmentManager.beginTransaction()
                     .replace(R.id.main_frameLayout, ReadDetailFragment().apply {
-                        // 아이템 아이디를 상세보기 페이지로 전달
+
+                        // 게시글 아이디를 상세보기 페이지로 전달
                         arguments = Bundle().apply {
                             val gson = Gson()
                             val viewableCapsuleJson = gson.toJson(result)
@@ -118,77 +129,76 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
                     }).commitAllowingStateLoss()
             }
         } catch (e: Exception) {
-            Log.d("글쓰기에서 넘어왔을 때", "SUCCESS")
+            Log.d("글쓰기에서 넘어왔을 때", "데이터 없음")
         }
 
         return binding.root
     }
 
+    //맵이 준비되었다면
     override fun onMapReady(naverMap: NaverMap) {
         this.naverMap = naverMap
+
+        //카메라를 현재 위치로 이동
         val cameraUpdate = CameraUpdate.scrollTo(LatLng(latitude, longitude))
         naverMap.moveCamera(cameraUpdate)
+
+        //카메라 이동 시 마커 크기 업데이트
         naverMap.addOnCameraChangeListener { _, _ ->
             updateMarkerSizes()
         }
-        Log.d("맵","준비")
 
+        //타임캡슐 데이터 초기화
         homeTimeCapsuleDetailData.clear()
         homeTimeCapsuleData.clear()
 
-        // 지도가 준비되면 마커를 추가합니다.
+        //타임캡슐 데이터와 상세 데이터가 같으면 열람 가능한 Api 호출
         if (homeTimeCapsuleDetailData.size == homeTimeCapsuleData.size) {
-            Log.d("위치","OnMap")
-            //getMarker(homeTimeCapsuleDetailData.size)
             callReadViewableApi()
-
         }
     }
 
+    //줌 레벨에 따라 마커 크기 계산
     private fun updateMarkerSizes() {
         val zoomLevel = naverMap.cameraPosition.zoom
         iconSize = calculateMarkerSize(zoomLevel)
     }
 
+    //줌 레벨에 따라 크기 지정
     private fun calculateMarkerSize(zoomLevel: Double): Int {
         return when {
-            zoomLevel < 10 -> 300 // Small size for zoomed out
-            zoomLevel < 15 -> 250  // Medium size for medium zoom
-            else -> 200  // Large size for zoomed in
+            zoomLevel < 10 -> 300
+            zoomLevel < 15 -> 250
+            else -> 200
         }
     }
 
+    //마커를 호출하는 함수
     private fun getMarker(count: Int) {
-        Log.d("강종", "SUCCESS1")
-        if (!::naverMap.isInitialized) {
-            Log.d("강종", "NaverMap is not initialized")
-            return
-        }
+        //마커 리스트 생성
         val markers = mutableListOf<Marker>()
-        Log.d("강종-1", "SUCCESS1")
-        Log.d("강종-1-1", "$count")
-        for (i in 0 until count) { // 루프 범위를 0 until count로 변경
+
+        for (i in 0 until count) {
             try {
-                val detailData = homeTimeCapsuleDetailData.getOrNull(i)
+                val detailData = homeTimeCapsuleDetailData.getOrNull(i) //변수 설정
 
                 if (detailData != null) {
                     val marker = Marker().apply {
+                        //위도와 경도 변수에 저장
                         val lat = detailData.latitude
                         val lnt = detailData.longitude
-                        position = LatLng(lat, lnt)
+
+                        position = LatLng(lat, lnt) //마커 위치 지정
                         map = naverMap
+
+                        //마커 이미지와 크기 지정
                         icon = OverlayImage.fromResource(R.drawable.icon_marker)
                         width = iconSize / 2
                         height = iconSize
-                        Log.d("강종-2", "SUCCESS1")
                     }
+                    markers.add(marker) //마커 리스트에 마커 추가
 
-                    Log.d("강종-3", "SUCCESS1")
-
-                    markers.add(marker)
-
-                    Log.d("강종-4", "SUCCESS1")
-
+                    //마커를 클릭했을 때 각 데이터로 dialog 팝업
                     marker.setOnClickListener {
                         val id = detailData.id
                         val title = detailData.title
@@ -199,17 +209,16 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
                         popupCapsule(id, title, viewableAt, latitude, longitude, daysLeft)
                         false
                     }
-
-                    Log.d("강종-5", "SUCCESS1")
                 } else {
                     Toast.makeText(requireContext(),"데이터를 불러오는 데 실패했습니다. 다시 시도해주세요.",Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
-                Log.d("강종의 원인", "${e.message}")
+                Log.d("에러", "${e.message}")
             }
         }
     }
 
+    //캡슐 dialog 팝업 및 각 데이터 전달
     private fun popupCapsule(id: Int, title: String, viewableAt: String, latitude: Double, longitude: Double, daysLeft: Int) {
         val dialog = HomeTimeCapsuleDetailDialog().apply {
             arguments = Bundle().apply {
@@ -245,27 +254,29 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
                     locationCode
                 )
             } else {
+                //위치 가져오기
                 fusedLocationClient.lastLocation.addOnCompleteListener { task ->
                     if (task.isSuccessful && task.result != null) {
                         val location = task.result
+
+                        //위도와 경도에 대입
                         latitude = location?.latitude!!
                         longitude = location.longitude
                     }
                 }
             }
         } catch (e: Exception) {
-            Log.d("강종 에러", "${e.message}")
+            Log.d("에러", "${e.message}")
         }
     }
 
-    // 열람 가능한 타임캡슐 데이터를 받아옴
+    //열람 가능한 타임캡슐 데이터를 받아옴
     private fun callReadViewableApi() {
-        // 로그인에서 보낸 SharedPreference로 accessToken 가져오고 BearerToken 형식으로 저장
+        //로그인에서 보낸 SharedPreference로 accessToken 가져오고 BearerToken 형식으로 저장
         val accessToken = getAccessToken()
         bearerToken = "Bearer $accessToken"
 
-        Log.d("토큰", bearerToken)
-        // 서버 연동
+        //서버 연동
         RetrofitClient.Service.getViewableTimeCapsules(bearerToken, "전체").enqueue(object :
             Callback<List<ViewableCapsule>> {
             @SuppressLint("NotifyDataSetChanged")
@@ -285,22 +296,20 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
                             )
                         })
                     }
-                    Log.d("볼 수 있는","SUCCESS")
                     callReadUnviewableApi()
                 } else {
-                    Log.d("볼 수 있는", "Response failed: ${response.code()}")
+                    Log.d("에러", "Response failed: ${response.code()}")
                 }
             }
 
             override fun onFailure(call: Call<List<ViewableCapsule>>, t: Throwable) {
-                Log.d("볼 수 있는", "API call failed: ${t.message}")
+                Log.d("에러", "API call failed: ${t.message}")
             }
         })
     }
 
     // 열람 불가능한 타임캡슐 데이터를 받아옴
     private fun callReadUnviewableApi() {
-        Log.d("볼 수 없는","SUCCESS")
         // 서버 연동
         RetrofitClient.Service.getUnviewableTimeCapsules(bearerToken, "전체").enqueue(object :
             Callback<List<UnviewableCapsule>> {
@@ -320,25 +329,25 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
                             )
                         })
                     }
-                    Log.d("볼 수 없는","SUCCESS1")
+
+                    //타임캡슐 데이터의 크기만큼 반복하여 id값으로 Api 호출
                     for (i in 0 until homeTimeCapsuleData.size) {
                         val id = homeTimeCapsuleData[i].id
                         callHomeApi(id)
                     }
-                    Log.d("볼 수 없는","SUCCESS2")
                 } else {
-                    Log.d("볼 수 없는", "Response failed: ${response.code()}")
+                    Log.d("에러", "Response failed: ${response.code()}")
                 }
             }
 
             override fun onFailure(call: Call<List<UnviewableCapsule>>, t: Throwable) {
-                Log.d("볼 수 없는", "API call failed: ${t.message}")
+                Log.d("에러", "API call failed: ${t.message}")
             }
         })
     }
 
+    //타임캡슐 id별로 데이터를 요청하는 Api 연동
     private fun callHomeApi(id: Int) {
-        Log.d("홈 호출","SUCCESS")
         RetrofitClient.Service.getHomeTimeCapsule(bearerToken, id).enqueue(object : Callback<HomeTimeCapsuleDetail> {
             override fun onResponse(
                 call: Call<HomeTimeCapsuleDetail>,
@@ -347,6 +356,7 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
                 if (response.isSuccessful) {
                     val homeTimeCapsuleDetail = response.body()
 
+                    //homeTimeCapsuleDetail 데이터 클래스에 각 항목을 저장
                     homeTimeCapsuleDetail?.let { item ->
                         homeTimeCapsuleDetailData.add(
                             HomeTimeCapsuleDetail(
@@ -359,23 +369,18 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
                             )
                         )
                     }
-                    val size=homeTimeCapsuleData.size
-                    val size2=homeTimeCapsuleDetailData.size
-                    Log.d("홈 data","$size")
-                    Log.d("홈 detail","$size2")
+
+                    //더 이상 homeTimeCapsuleDetail 데이터 클래스에 추가할 항목이 없을 경우 마커를 띄움
                     if (homeTimeCapsuleDetailData.size == homeTimeCapsuleData.size) {
                         for (i in homeTimeCapsuleDetailData.indices) {
-                            Log.d("위치","OnCallHome")
                             getMarker(i + 1) // i + 1로 변경
                         }
                     }
-                } else {
-                    Log.d("홈", "fail")
                 }
             }
 
             override fun onFailure(call: Call<HomeTimeCapsuleDetail>, t: Throwable) {
-                Log.d("홈", "fail1: ${t.message}")
+                Log.d("에러", "${t.message}")
             }
         })
     }

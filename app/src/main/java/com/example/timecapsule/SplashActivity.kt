@@ -11,6 +11,7 @@ import com.example.timecapsule.databinding.ActivitySplashBinding
 
 @SuppressLint("CustomSplashScreen")
 class SplashActivity : AppCompatActivity(){
+    //바인딩 설정
     lateinit var binding : ActivitySplashBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
