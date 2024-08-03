@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="350dp"
-    android:layout_height="wrap_content"
+    android:layout_height="200dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_gravity="center"
@@ -11,26 +11,18 @@
 
     <LinearLayout
         android:id="@+id/dialog_home_place_ll"
-        android:layout_width="wrap_content"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        android:gravity="center"
         android:layout_marginTop="15dp">
 
         <TextView
-            android:id="@+id/dialog_home_place_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/homePlace"
-            android:textColor="@color/orange"
-            android:textStyle="bold"
-            tools:ignore="TextContrastCheck"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/homePlaceText"
+            android:text="@string/homeDialogText"
             android:textColor="@color/orange"
             android:textStyle="bold"
             tools:ignore="TextContrastCheck"/>

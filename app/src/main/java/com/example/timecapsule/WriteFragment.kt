@@ -24,7 +24,6 @@ import java.time.LocalDate
 import android.Manifest
 import android.content.Context
 import android.provider.MediaStore
-import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -174,16 +173,6 @@ class WriteFragment : Fragment() {
             } else {
                 getOpenDate()   //열람 가능일을 정하는 코드
                 callWriteApi()    //서버 api 연동
-
-                //홈으로 화면 전환
-                val homeFragment = HomeFragment() // homeFragment 인스턴스 생성
-                val transaction = parentFragmentManager.beginTransaction()
-                transaction.replace(R.id.main_frameLayout, homeFragment)
-                transaction.addToBackStack(null)
-                transaction.commit()
-
-                // 바텀 네비게이션에서 홈을 선택한 상태로 설정
-                (requireActivity() as MainActivity).setSelectedNavItem(R.id.homeFragment)
             }
         }
         return binding.root
@@ -352,8 +341,6 @@ class WriteFragment : Fragment() {
         val accessToken = getAccessToken()
         val bearerToken = "Bearer $accessToken"
 
-        Log.d("토큰",bearerToken)
-
         //jsonObject 객체 생성 및 데이터 삽입
         val jsonObject=JSONObject()
 
@@ -386,8 +373,18 @@ class WriteFragment : Fragment() {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 if (response.isSuccessful) {
                     Toast.makeText(requireContext(), "등록되었습니다.", Toast.LENGTH_SHORT).show()
+                    //홈으로 화면 전환
+                    (context as MainActivity).supportFragmentManager.beginTransaction()
+                        .replace(R.id.main_frameLayout, HomeFragment()
+                        ).commitAllowingStateLoss()
+
+                    // 바텀 네비게이션에서 홈을 선택한 상태로 설정
+                    (requireActivity() as MainActivity).setSelectedNavItem(R.id.homeFragment)
                 } else {
-                    Toast.makeText(requireContext(), "등록에 실패했습니다. 잠시 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
+                    (context as MainActivity).supportFragmentManager.beginTransaction()
+                        .replace(R.id.main_frameLayout, WriteFragment()
+                        ).commitAllowingStateLoss()
+                    Toast.makeText(requireContext(), "이미지 파일은 1MB까지 업로드가 가능합니다.", Toast.LENGTH_SHORT).show()
                 }
             }
 

@@ -16,21 +16,25 @@ class SplashActivity : AppCompatActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        //바인딩 및 화면 설정
         binding=ActivitySplashBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        //첫 번째 splash 화면을 보여주는 코드
         showFirstSplash()
 
-        // 일정 시간 지연 이후 실행하기 위한 코드
+        // 일정 시간 지연 다음 splash 화면으로 이동
         Handler(Looper.getMainLooper()).postDelayed({
             showSecondSplash()
         }, 3000)
     }
 
+    //첫 번째 splash 화면을 보여주는 코드
     private fun showFirstSplash(){
         binding.splash1Iv.visibility= View.VISIBLE
     }
 
+    //두 번쨰 splash 화면을 보여주는 코드
     private fun showSecondSplash(){
         binding.splash1Iv.visibility = View.GONE
         binding.splash2Iv.visibility = View.VISIBLE
@@ -38,8 +42,8 @@ class SplashActivity : AppCompatActivity(){
         // 일정 시간 지연 이후 실행하기 위한 코드
         Handler(Looper.getMainLooper()).postDelayed({
 
-            // 일정 시간이 지나면 MainActivity로 이동
-            val intent= Intent( this,MainActivity::class.java)
+            // 일정 시간이 지나면 LoginActivity로 이동
+            val intent= Intent( this, LoginActivity::class.java)
             startActivity(intent)
 
             // 이전 키를 눌렀을 때 스플래스 스크린 화면으로 이동을 방지하기 위해

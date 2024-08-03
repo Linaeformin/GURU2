@@ -1,7 +1,9 @@
 package com.example.timecapsule
 
 import RetrofitClient
+import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Typeface
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -27,6 +29,7 @@ class ReadDetailFragment : Fragment() {
     private var latitude: Double=0.0
     private var longitude: Double=0.0
 
+    private var viewableCapsuleId: Int=-1
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -49,6 +52,16 @@ class ReadDetailFragment : Fragment() {
             // 바텀 네비게이션에서 열람하기를 선택한 상태로 설정
             (requireActivity() as MainActivity).setSelectedNavItem(R.id.readFragment)
         }
+
+        binding.readDetailDeleteTv.setOnClickListener {
+            val deleteDialog=DeleteTimeCapsuleDialog().apply {
+                arguments=Bundle().apply {
+                    putString("id",viewableCapsuleId.toString())
+                }
+            }
+            deleteDialog.show(parentFragmentManager,"DeleteDialog")
+            binding.readDetailDeleteTv.setTypeface(null, Typeface.BOLD)
+        }
         return binding.root
     }
 
@@ -61,11 +74,14 @@ class ReadDetailFragment : Fragment() {
 
         // 해당하는 항목(게시글)의 id 값을 gson으로 저장
         val viewableCapsuleJson=arguments?.getString("viewableCapsuleJson")
-        val viewableCapsuleId:Int=gson.fromJson(viewableCapsuleJson, Int::class.java)
+        viewableCapsuleId=gson.fromJson(viewableCapsuleJson, Int::class.java)
+
+        Log.d("왜지",viewableCapsuleId.toString())
 
         //서버 연동
         RetrofitClient.Service.getViewableDetail(bearerToken, viewableCapsuleId).enqueue(object:
             Callback<ViewableCapsule>{
+            @SuppressLint("SuspiciousIndentation")
             override fun onResponse(
                 call: Call<ViewableCapsule>,
                 response: Response<ViewableCapsule>

@@ -73,14 +73,6 @@
         app:layout_constraintBottom_toBottomOf="@id/read_detail_date_ll">
 
         <TextView
-            android:id="@+id/read_detail_put_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/readDetailPutBtn"
-            android:textSize="16sp"
-            android:paddingHorizontal="5dp"/>
-
-        <TextView
             android:id="@+id/read_detail_delete_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
